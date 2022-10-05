@@ -25,10 +25,14 @@ The app was created to help monitor products availability and prices. It imports
 
 ## Screenshots
 
-![ ](screenshots/screenshot_list_products.jpg)
-![ ](screenshots/screenshot_list_products_2.jpg)
-![ ](screenshots/screenshot_product_details.jpg)
-![ ](screenshots/screenshot_product_details_2.jpg)
+### Updating supplier info
+![](screenshots/update_supplier_info_popup.gif)
+### Product list page
+![](screenshots/screenshot_products_list.JPG)
+![](screenshots/screenshot_products_list_2.JPG)
+### Product details page
+![](screenshots/screenshot_product_details.JPG)
+![](screenshots/screenshot_product_details_2.JPG)
 
 ## Planned features
 * Selecting few products at once from the list and make an action for each one (delete or update info).
