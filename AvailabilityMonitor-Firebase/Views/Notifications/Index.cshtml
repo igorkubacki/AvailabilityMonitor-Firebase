@@ -1,0 +1,131 @@
+﻿@model IEnumerable<AvailabilityMonitor_Firebase.Models.PriceChange>
+
+@{
+    ViewData["Title"] = "Index";
+
+    IEnumerable<PriceChange>? priceChanges = ViewData["PriceChanges"] as IEnumerable<PriceChange>;
+    IEnumerable<QuantityChange>? quantityChanges = ViewData["QuantityChanges"] as IEnumerable<QuantityChange>;
+}
+
+<div id="importInfo" class="import-popup">
+    <span id="importMessage"></span>
+</div>
+
+<div class="table-container">
+
+    <div class="notifications-top" >
+        <h1>Notifications</h1>
+        <input type="button" class="filters-button button-mark" onclick="startMark()" value="Mark all as read" />
+    </div>
+    <br />
+
+</div>
+    @if(priceChanges.Count() > 0)
+    {
+        <div class="table-container-half">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="col-sm-6">
+                            Price changes
+                        </th>
+                        <th class="col-sm-5"></th>
+                        <th class="col-sm-1">
+                        
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+            
+                    @foreach (PriceChange change in priceChanges) {
+                        <tr id="price-@change.DateTime" >
+                            <td>
+                                <a asp-controller="Products" asp-action="Details" asp-route-id="@change.ProductId" class="title">
+                                    @change.productName
+                                </a>
+                                <br />
+                            </td>
+                            <td>
+                            @if(change.PreviousPrice < change.NewPrice )
+                            {
+                                <div class="change change-red">@change.PreviousPrice <i class="fa-solid fa-arrow-trend-up"></i> @change.NewPrice </div>
+                            }
+                            else
+                            {
+                                <div class="change change-green">@change.PreviousPrice <i class="fa-solid fa-arrow-trend-down"></i> @change.NewPrice </div>
+                            }
+
+                            </td>
+                            <td >
+                                <div class="popup mark-as-read-icon" onclick="readPriceNotification('@change.DateTime', @change.ProductId)" 
+                                onmouseover="showTooltip('price-popup-', '@change.DateTime')" onmouseout="showTooltip('price-popup-', '@change.DateTime')">
+                                    <i class="fa fa-check" aria-hidden="true"></i><span id="price-popup-@change.DateTime" class="popuptext mark-as-read-popup">Mark as read</span>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="table-container-half">
+            <div style="text-align:center;font-size:20px">No price notifications</div>
+        </div>
+    }
+<div style="float:left;margin:1%;"></div>
+    @if(quantityChanges.Count() > 0)
+    {
+        <div class="table-container-half">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="col-sm-6">
+                            Quantity changes
+                        </th>
+                        <th class="col-sm-5"></th>
+                        <th class="col-sm-1">
+                        
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+            
+                    @foreach (QuantityChange change in quantityChanges) {
+                        <tr id="quantity-@change.DateTime" >
+                            <td>
+                                <a asp-controller="Products" asp-action="Details" asp-route-id="@change.ProductId" class="title">
+                                    @change.productName
+                                </a>
+                                <br />
+                            </td>
+                            <td>
+                            @if(change.PreviousQuantity > change.NewQuantity)
+                            {
+                                <div class="change change-red">@change.PreviousQuantity <i class="fa-solid fa-arrow-trend-down"></i> @change.NewQuantity</div>
+                            }
+                            else
+                            {
+                                <div class="change change-green">@change.PreviousQuantity <i class="fa-solid fa-arrow-trend-up"></i> @change.NewQuantity</div>
+                            }
+
+                            </td>
+                            <td >
+                                <div class="popup mark-as-read-icon" onclick="readQuantityNotification('@change.DateTime', @change.ProductId)" 
+                                onmouseover="showTooltip('quantity-popup-', '@change.DateTime')" onmouseout="showTooltip('quantity-popup-', '@change.DateTime')">
+                                    <i class="fa fa-check" aria-hidden="true"></i><span id="quantity-popup-@change.DateTime" class="popuptext mark-as-read-popup">Mark as read</span>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="table-container-half">
+            <div style="text-align:center; font-size: 20px;">No quantity notifications</div>
+        </div>
+    }

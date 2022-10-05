@@ -1,0 +1,452 @@
+html {
+  font-size: 14px;
+
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+
+}
+
+body {
+    margin-bottom: 60px;
+    background-color: #eee;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px;
+}
+
+.title{
+    color: #555;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+    .title:hover{
+        color: #000;
+    }
+
+.table-container{
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: #bbb 0px 0px 15px;
+}
+
+.table-container-details {
+    padding: 50px;
+    background-color: #fff;
+    box-shadow: #bbb 0px 0px 15px;
+    height: 555px;
+}
+
+.table-container-chart {
+    padding: 35px;
+    margin-top: 2%;
+    background-color: #fff;
+    box-shadow: #bbb 0px 0px 15px;
+    float: left;
+    width: 49%;
+}
+
+/* Popup container */
+.popup {
+    position: relative;
+    display: inline-block;
+    z-index: 3;
+}
+
+    /* The actual popup (appears on top) */
+    .popup .popuptext {
+        visibility: hidden;
+        width: 160px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        border-radius: 20px;
+        padding: 8px 0;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -80px;
+        box-shadow: #aaa 5px 5px 5px;
+    }
+
+        /* Popup arrow */
+        .popup .popuptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+    .popup .popupphoto {
+        padding: 6px 0;
+        background-color: #fff;
+        box-shadow: rgb(150, 150, 150) 3px 3px 3px 3px;
+        visibility: hidden;
+        width: 160px;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -80px;
+    }
+
+        .popup .popupphoto::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #fff transparent transparent transparent;
+        }
+
+    /* Toggle this class when clicking on the popup container (hide and show the popup) */
+    .popup .show {
+        visibility: visible;
+        -webkit-animation: fadeIn 0.5s;
+        animation: fadeIn 0.5s
+    }
+
+
+@-webkit-keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.image-small{
+    width: 50px;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    vertical-align: central;
+}
+
+.image-zoomed{
+    width: 150px;
+    height: auto;
+}
+
+
+.filters-input-area {
+    height: 70px;
+    padding: 2px;
+    clear: both;
+}
+    .filters-input-area input {
+        border: 1px solid #666;
+        border-radius: 3px;
+    }
+
+    .filters-input-area input:focus {
+        outline: 0px;
+    }
+
+.filters-input-label {
+    left: 10px;
+    top: 10px;
+    position: relative;
+    font-size: 13px;
+    background: #fff;
+    padding: 0px 2px 0px 2px;
+    display: inline;
+    white-space: nowrap;
+}
+.filters-container {
+    width: 18%;
+    float: left;
+    margin: 0px 5px;
+}
+
+    .filters-container input {
+        outline: 0px;
+        height: 40px;
+        padding-left: 5px;
+    }
+
+.filters-container-double-left {
+    min-width: 100px;
+    max-width: 10%;
+    float: left;
+    margin-left: 5px;
+}
+
+    .filters-container-double-left input {
+        width: 100%;
+        float: left;
+        outline: 0px;
+        height: 40px;
+        border-right: none;
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+        padding-left: 5px;
+    }
+
+.filters-container-double-right {
+    min-width: 100px;
+    max-width: 10%;
+    float: left;
+    margin-right: 5px;
+}
+
+    .filters-container-double-right input {
+        width: 100%;
+        float: left;
+        outline: 0px;
+        height: 40px;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+        padding-left: 5px;
+    }
+
+.filters-button {
+    width: 140px;
+    height: 40px;
+    float: right;
+    padding: 5px 15px;
+    margin: 30px 5px;
+    border: 1px solid #666;
+    border-radius: 25px;
+    background-color: #e9e9e9;
+}
+
+    .filters-button:hover {
+        background-color: #d9d9d9;
+    }
+
+.filters-button-apply {
+    color: #fff;
+    background-color: #0097fa;
+    border: 1px solid #0097fa;
+}
+
+    .filters-button-apply:hover {
+        background-color: #0087ea;
+    }
+.filters-button-clear {
+    color: black;
+}
+
+.filters-button-sorting {
+    padding: 0px;
+}
+
+.filters-button-sorting option {
+    background-color: #fff;
+    text-align: center;
+
+}
+
+    .filters-button-sorting:focus {
+        outline: 0px;
+    }
+
+.filters-button-import {
+    width: auto;
+    color: #fff;
+    background-color: #00c300;
+    border: 1px solid #00c300;
+    margin: 3px 5px;
+}
+
+    .filters-button-import:hover {
+        background-color: #00b300;
+    }
+
+.filters-button-add {
+    width: 180px;
+    margin: 3px 5px;
+}
+
+.page-switch {
+    float: left;
+    height: 70px;
+    padding: 10px;
+}
+
+.buttons-bottom {
+    clear: both;
+    width: 100%;
+    height: 70px;
+}
+
+.buttons-top {
+    width: 100%;
+}
+
+.items-per-page-info {
+    float: left;
+    padding: 25px 8px;
+}
+
+.import-popup {
+    width: 20%;
+    max-width: 300px;
+    text-align: center;
+    position: fixed;
+    bottom: 0px;
+    left: -400px;
+    padding: 30px 50px;
+    color: #fff;
+    background-color: #00c300;
+    margin-bottom: 20px;
+    box-shadow: #aaa 1px 1px 15px 4px;
+    animation-name: slide-out;
+    z-index: 4;
+}
+
+.show {
+    animation-name: slide-in;
+    animation-duration: 1s;
+    left: 20px;
+}
+
+@keyframes slide-in {
+    from {left: -400px}
+    to {left: 20px}
+}
+
+@keyframes slide-out {
+    from {left: 20px}
+    to {left: -400px}
+}
+
+.inactive-button {
+    opacity: 50%;
+}
+
+.product-image {
+    float: right;
+    width: 30%;
+
+}
+
+.product-details-buttons {
+    clear: both;
+    width: 100%;
+}
+
+.details-button-update {
+    float: right;
+    width: auto;
+}
+
+.details-button-import {
+    float: right;
+    width: auto;
+    background-color: #00c300;
+    border: 1px solid #00c300;
+    color: #fff;
+}
+
+    .details-button-import:hover {
+        background-color: #00b300;
+    }
+
+.details-button-delete {
+    width: 40px;
+    padding: 11px 12px;
+}
+
+.table-container-half {
+    width: 49%;
+    padding: 12px;
+    margin-top: 20px;
+    margin-bottom: 80px;
+    box-shadow: #bbb 0px 0px 15px;
+    background-color: #fff;
+    float: left;
+}
+
+.change {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 500;
+    padding: 5px;
+}
+
+.change-red {
+    color: #d84553;
+}
+
+.change-green {
+    color: #33d333;
+}
+
+.mark-as-read-icon {
+    vertical-align: middle;
+    padding-top: 5px;
+    font-size: 22px;
+    color: #666;
+    display: revert;
+}
+
+    .mark-as-read-icon:hover {
+        color: #000;
+        cursor: pointer;
+    }
+
+.mark-as-read-popup {
+    font-size: 16px;
+}
+
+.notifications-top {
+    height: 115px;
+}
+
+.button-mark {
+    width: 200px;
+    color: #fff;
+    background-color: #00c300;
+    border: 1px solid #00c300;
+}
+
+    .button-mark:hover {
+        background-color: #00b300;
+    }
+
+.copy-icon {
+    cursor: pointer;
+}
+
+.supplier-detail {
+    background-color: #eee;
+}
+

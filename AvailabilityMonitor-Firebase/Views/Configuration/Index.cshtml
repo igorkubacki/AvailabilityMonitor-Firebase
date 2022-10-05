@@ -1,0 +1,41 @@
+﻿@model IEnumerable<AvailabilityMonitor_Firebase.Models.Config>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Configuration</h1>
+
+<p></p>
+@foreach (var item in Model) {
+        <dl>
+            <dt>
+                @Html.DisplayNameFor(model => model.supplierFileUrl):
+            </dt>
+            <dd>
+                @Html.DisplayFor(modelItem => item.supplierFileUrl)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.prestaShopUrl):
+            </dt>
+            <dd>
+                @Html.DisplayFor(modelItem => item.prestaShopUrl)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.prestaApiKey):
+            </dt>
+            <dd>
+                @Html.DisplayFor(modelItem => item.prestaApiKey)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.currency):
+            </dt>
+            <dd>
+                @Html.DisplayFor(modelItem => item.currency)
+            </dd>
+            <dt></dt>
+        </dl>
+}
+@Html.ActionLink(linkText: "Edit", actionName: "Edit", routeValues: new { id = Model.First().id })
+
+

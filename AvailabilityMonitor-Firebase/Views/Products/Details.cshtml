@@ -1,0 +1,225 @@
+﻿@using System.Text.Json
+@using System.Web.Helpers
+@using Newtonsoft.Json
+@model AvailabilityMonitor_Firebase.Models.Product
+
+
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="~/Scripts/jquery-1.10.2.js"></script>  
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+@{
+    ViewData["Title"] = "Details";
+
+    // IEnumerable<PriceChange>? priceChanges = ViewData["PriceChanges"] as IEnumerable<PriceChange>;
+    // IEnumerable<QuantityChange>? quantityChanges = ViewData["QuantityChanges"] as IEnumerable<QuantityChange>;
+}
+
+<div id="importInfo" class="import-popup">
+    <span id="importMessage"></span>
+</div>
+
+<div class="table-container-details">
+<h3>@Model.Name</h3>
+
+<div>
+    <hr style="height:2px"/>
+    <div style="float:left;max-width:70%">
+        <dl class="row">
+            <dt class = "col-sm-3">
+                PrestaShop ID
+            </dt>
+            <dd class = "col-sm-9">
+                @Html.DisplayFor(model => model.PrestashopId)
+            </dd>
+            <dt class = "col-sm-3">
+                Index
+            </dt>
+            <dd class="col-sm-9">
+                <span id="indexValue">@Html.DisplayFor(model => model.Index)</span>
+                 
+                <div class="popup" >
+                    <span class="popuptext" id="index">Click to copy</span>
+                    <i class="fa-regular fa-copy copy-icon" onclick="copyIndex()" onmouseover="indexTooltip()" onmouseout="indexTooltip()"></i>
+                </div>
+            </dd>
+            <dt class = "col-sm-3">
+                Our price
+            </dt>
+            <dd class = "col-sm-9">
+                @Html.DisplayFor(model => model.RetailPrice)
+            </dd>
+            <dt class = "col-sm-3">
+                Wholesale price
+            </dt>
+            <dd class = "col-sm-9">
+                @Html.DisplayFor(model => model.SupplierWholesalePrice)
+            </dd>
+            <dt class = "col-sm-3">
+                Supplier retail price
+            </dt>
+            <dd class = "col-sm-9">
+                @Html.DisplayFor(model => model.SupplierRetailPrice)
+            </dd>
+            <dt class = "col-sm-3">
+                Supplier quantity
+            </dt>
+            <dd class = "col-sm-9">
+                @Html.DisplayFor(model => model.SupplierQuantity)
+            </dd>
+            <dt class = "col-sm-3">
+                Quantity
+            </dt>
+            <dd class = "col-sm-9">
+                @Html.DisplayFor(model => model.Quantity)
+            </dd>
+            <dt class = "col-sm-3">
+                Availability Label
+            </dt>
+            <dd class = "col-sm-9">
+                @if (string.IsNullOrEmpty(Model.AvailabilityLabel))
+                {
+                    <text>Available on request</text>
+                }
+                else
+                {
+                    @Html.DisplayFor(model => model.AvailabilityLabel)       
+                }
+            </dd>
+            <dt class = "col-sm-3">
+                Visible on supplier page
+            </dt>
+            <dd class = "col-sm-9">
+                @if(Model.IsVisible != null)
+                {
+                    @if ((bool)Model.IsVisible)
+                    {
+                        <span>Yes</span>
+                    }
+                    else
+                    {
+                        <span>No</span>
+                    }
+                }
+                else
+                {
+                    <span>No info</span>
+                }
+                </dd>
+        </dl>
+    </div>
+    <div class="product-image">
+        <img src="@Model?.PhotoURL" title="@Model?.Name" style="width:322px"/>
+    </div>
+</div>
+<div class="product-details-buttons">
+    <input id="import-button" type="button" class="filters-button details-button-import" onclick="startImport(@Model.PrestashopId)" value="Update info from PrestaShop" />
+    <input id="update-button" type="button" class="filters-button details-button-update" onclick="startUpdate(@Model.PrestashopId)" value="Update supplier info" />
+    <span id="delete-button" type="button" title="Delete product" onclick="deleteProduct(@Model.PrestashopId)" class="filters-button fa-solid fa-trash details-button-delete"></span>
+</div>
+</div>
+
+
+
+<div style="clear:both">
+    <div class="table-container-chart">
+        <h4>Supplier price</h4>
+        <div id="chartContainer"  >
+            <canvas id="priceChart"  />
+        </div>
+    </div>
+    <div style="margin: 1%; float:left"></div>
+    <div class="table-container-chart">
+        <h4>Supplier quantity</h4>
+        <div id="chartContainer" >
+            <canvas id="quantityChart"  />
+        </div>
+    </div>
+</div>
+<div style="clear:both;visibility:hidden"></div>
+
+
+<script type="text/javascript">
+const ctxPrice = document.getElementById('priceChart').getContext('2d');
+const ctxQuantity = document.getElementById('quantityChart').getContext('2d');
+
+var prices = @ViewData["pricesJson"];
+var quantities = @ViewData["quantitiesJson"];
+var priceLabels = '@ViewData["priceLabelsJson"]';
+var quantityLabels = '@ViewData["quantityLabelsJson"]';
+
+const priceChart = new Chart(ctxPrice, {
+    type: 'line',
+    data: {
+        labels: priceLabels.split(','),
+        datasets: [{
+            label: 'Price',
+            data: prices,
+            backgroundColor: 'rgba(0, 151, 250, 0.2)',
+            borderColor: 'rgba(0, 151, 250, 1)',
+            borderWidth: 4,
+            pointHitRadius: 30
+        }]
+    },
+    options: {
+        legend: {
+            display: false
+        },
+        scales: {
+            xAxes: [{
+                gridLines: {
+                    display: false,
+                    color: "rgba(255,255,255,0)"
+                }
+            }],
+            yAxes: [{
+                ticks: {
+                    suggestedMax: Math.max.apply(null, prices) + 0.01 * Math.max.apply(null, prices),
+                    suggestedMin: Math.min.apply(null, prices) - 0.01 * Math.min.apply(null, prices),
+                    padding: 20,
+                    precision: 0
+                }
+            }]
+        }
+    }
+});
+
+const quantityChart = new Chart(ctxQuantity, {
+    type: 'line',
+    data: {
+        labels: quantityLabels.split(','),
+        datasets: [{
+            label: 'Quantity',
+            data: quantities,
+            backgroundColor: 'rgba(190, 160, 20, 0.2)',
+            borderColor: 'rgba(240, 210, 60, 1)',
+            borderWidth: 4,
+            pointHitRadius: 30
+        }]
+    },
+    options: {
+        legend: {
+            display: false
+        },
+        scales: {
+            xAxes: {
+                offset: true,
+                align: 'end',
+                gridLines: {
+                    display: false,
+                    color: "rgba(255,255,255,0)"
+                }
+            },
+            yAxes: [{
+                ticks: {
+                    min: 0,
+                    suggestedMax: Math.max.apply(null, quantities) + 0.01 * Math.max.apply(null, quantities),
+                    beginAtZero: true,
+                    precision: 0,
+                    padding: 20
+                }
+            }]
+        }
+    }
+});
+</script>
