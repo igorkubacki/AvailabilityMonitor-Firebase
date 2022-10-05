@@ -1,4 +1,3 @@
-using AvailabilityMonitor_Firebase.Models;
 using AvailabilityMonitor_Firebase.Data;
 using Microsoft.AspNetCore.Identity;
 
@@ -18,7 +17,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddMvc().AddSessionStateTempDataProvider();
 builder.Services.AddSession();
 
-//Add sessions
+// Add sessions.
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromSeconds(10);

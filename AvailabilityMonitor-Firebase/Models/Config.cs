@@ -4,18 +4,16 @@ namespace AvailabilityMonitor_Firebase.Models
 {
     public class Config
     {
-        [Key]
-        public int id { get; set; }
         [DataType(DataType.Url)]
         [Display(Name = "Adress of the XML file")]
-        public string supplierFileUrl { get; set; }
+        public string SupplierFileUrl { get; set; }
         [Display(Name = "PrestaShop adress")]
         [DataType(DataType.Url)]
-        public string prestaShopUrl { get; set; }
+        public string PrestaShopUrl { get; set; }
         [StringLength(60)]
         [Display(Name = "PrestaShop API key")]
-        public string prestaApiKey { get; set; }
+        public string PrestaApiKey { get; set; }
         [Display(Name = "Currency")]
-        public string? currency { get; set; }
+        public string? Currency { get; set; }
     }
 }

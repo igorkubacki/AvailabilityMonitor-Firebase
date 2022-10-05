@@ -28,6 +28,14 @@ body {
     line-height: 60px;
 }
 
+.page-title {
+    letter-spacing: 1px;
+    font-size: 50px;
+    width: 30%;
+    float:left;
+    background-color: #fff;
+}
+
 .title{
     color: #555;
     text-decoration: none;
@@ -60,14 +68,12 @@ body {
     width: 49%;
 }
 
-/* Popup container */
 .popup {
     position: relative;
     display: inline-block;
     z-index: 3;
 }
 
-    /* The actual popup (appears on top) */
     .popup .popuptext {
         visibility: hidden;
         width: 160px;
@@ -84,7 +90,6 @@ body {
         box-shadow: #aaa 5px 5px 5px;
     }
 
-        /* Popup arrow */
         .popup .popuptext::after {
             content: "";
             position: absolute;
@@ -123,13 +128,11 @@ body {
             border-color: #fff transparent transparent transparent;
         }
 
-    /* Toggle this class when clicking on the popup container (hide and show the popup) */
     .popup .show {
         visibility: visible;
         -webkit-animation: fadeIn 0.5s;
         animation: fadeIn 0.5s
     }
-
 
 @-webkit-keyframes fadeIn {
     from {
@@ -163,7 +166,6 @@ body {
     width: 150px;
     height: auto;
 }
-
 
 .filters-input-area {
     height: 70px;
@@ -260,6 +262,7 @@ body {
     .filters-button-apply:hover {
         background-color: #0087ea;
     }
+
 .filters-button-clear {
     color: black;
 }
@@ -299,6 +302,10 @@ body {
     float: left;
     height: 70px;
     padding: 10px;
+}
+
+.page-switch-details {
+    padding-bottom: 5px;
 }
 
 .buttons-bottom {
@@ -355,7 +362,6 @@ body {
 .product-image {
     float: right;
     width: 30%;
-
 }
 
 .product-details-buttons {
@@ -449,4 +455,3 @@ body {
 .supplier-detail {
     background-color: #eee;
 }
-

@@ -16,7 +16,7 @@
 <div class="table-container">
 
 <div class="buttons-top">
-    <h1>Products</h1>
+    <h1 class="page-title">Products</h1>
     <input id="import-button" type="button" value="Import/update products from PrestaShop" onclick="startImport()" class="filters-button filters-button-import"/>
     <input id="update-button" type="button" value="Update supplier info" onclick="startUpdate()" class="filters-button filters-button-add"/>
 </div>
@@ -72,8 +72,10 @@
                 <option value="price_desc">Price: high to low</option>
             </select>
             <div class="page-switch">
-                Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of 
-                @Model.PageCount (@Model.FirstItemOnPage-@Model.LastItemOnPage from @Model.TotalItemCount products)
+                <div class="page-switch-details">
+                    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of 
+                    @Model.PageCount (@Model.FirstItemOnPage-@Model.LastItemOnPage from @Model.TotalItemCount products)
+                </div>
             
                 @Html.PagedListPager(Model, page => Url.Action("Index", 
                     new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }), 
@@ -149,7 +151,7 @@
                 ID @Html.DisplayFor(modelItem => item.PrestashopId) |
                 SKU <span id="indexValue-@item.PrestashopId">@Html.DisplayFor(modelItem => item.Index)</span>
                 <div class="popup" onmouseover="indexTooltip(@item.PrestashopId)" onmouseout="indexTooltip(@item.PrestashopId)">
-                    <i class="fa-regular fa-copy copy-icon" onclick="copyIndex(@item.ProductId)"></i>
+                    <i class="fa-regular fa-copy copy-icon" onclick="copyIndex(@item.PrestashopId)"></i>
                     <span id="index-@item.PrestashopId" class="popuptext">Click to copy</span>
                 </div>
             </td>
@@ -178,7 +180,10 @@
 }
     </tbody>
 </table>
-Displaying page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount (@Model.FirstItemOnPage-@Model.LastItemOnPage from @Model.TotalItemCount products)
+<div class="page-switch-details">
+    Displaying page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of 
+    @Model.PageCount (@Model.FirstItemOnPage-@Model.LastItemOnPage from @Model.TotalItemCount products)
+</div>
 
 @Html.PagedListPager(Model, page => Url.Action("Index", 
     new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }), 

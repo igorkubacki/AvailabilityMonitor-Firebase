@@ -10,32 +10,30 @@
 @foreach (var item in Model) {
         <dl>
             <dt>
-                @Html.DisplayNameFor(model => model.supplierFileUrl):
+                @Html.DisplayNameFor(model => model.SupplierFileUrl):
             </dt>
             <dd>
-                @Html.DisplayFor(modelItem => item.supplierFileUrl)
+                @Html.DisplayFor(modelItem => item.SupplierFileUrl)
             </dd>
             <dt>
-                @Html.DisplayNameFor(model => model.prestaShopUrl):
+                @Html.DisplayNameFor(model => model.PrestaShopUrl):
             </dt>
             <dd>
-                @Html.DisplayFor(modelItem => item.prestaShopUrl)
+                @Html.DisplayFor(modelItem => item.PrestaShopUrl)
             </dd>
             <dt>
-                @Html.DisplayNameFor(model => model.prestaApiKey):
+                @Html.DisplayNameFor(model => model.PrestaApiKey):
             </dt>
             <dd>
-                @Html.DisplayFor(modelItem => item.prestaApiKey)
+                @Html.DisplayFor(modelItem => item.PrestaApiKey)
             </dd>
             <dt>
-                @Html.DisplayNameFor(model => model.currency):
+                @Html.DisplayNameFor(model => model.Currency):
             </dt>
             <dd>
-                @Html.DisplayFor(modelItem => item.currency)
+                @Html.DisplayFor(modelItem => item.Currency)
             </dd>
             <dt></dt>
         </dl>
 }
-@Html.ActionLink(linkText: "Edit", actionName: "Edit", routeValues: new { id = Model.First().id })
-
-
+@Html.ActionLink(linkText: "Edit", actionName: "Edit")

@@ -1,5 +1,4 @@
 ﻿using AvailabilityMonitor_Firebase.Models;
-using Firebase.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using X.PagedList;
@@ -27,6 +26,7 @@ namespace AvailabilityMonitor_Firebase.Controllers
         {
             _businessLogic = new BusinessLogic();
         }
+
         public async Task<ActionResult> Index(string? sortOrder, string name, string index, int? prestashopId, float? priceFrom, float? priceTo,
             int? quantityFrom, int? quantityTo, int? page, int? pageSize)
         {
@@ -58,10 +58,11 @@ namespace AvailabilityMonitor_Firebase.Controllers
             int pageNumber = page ?? 1;
 
             Config? config = await _businessLogic.GetConfig();
-            ViewData["currency"] = config.currency;
+            ViewData["currency"] = config?.Currency;
 
             return View(products.ToPagedList(pageNumber, productsPerPage));
         }
+
         public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
@@ -121,11 +122,6 @@ namespace AvailabilityMonitor_Firebase.Controllers
             ViewData["quantitiesJson"] = quantitiesJson;
             ViewData["quantityLabelsJson"] = quantityLabels;
 
-
-            // Passing data
-            // ViewData["PriceChanges"] = _context.PriceChange.Where(i => i.ProductId == id).ToList();
-            // ViewData["QuantityChanges"] = _context.QuantityChange.Where(i => i.ProductId == id).ToList();
-
             return View(product);
         }
 
@@ -133,14 +129,17 @@ namespace AvailabilityMonitor_Firebase.Controllers
         {
             await _businessLogic.DeleteProduct(id);
         }
+
         public async Task UpdateAllProductsFromPresta()
         {
             await _businessLogic.ImportProductsFromPresta();
         }
+
         public async Task UpdateProductFromPresta(int id)
         {
             await _businessLogic.UpdateProductFromPresta(id);
         }
+
         public async Task UpdateAllProductsSupplierInfo()
         {
             await _businessLogic.UpdateSupplierInfo();
@@ -148,7 +147,7 @@ namespace AvailabilityMonitor_Firebase.Controllers
 
         public async Task UpdateProductSupplierInfo(int id)
         {
-            await _businessLogic.UpdateInfoFromXmlFile(id);
+            await _businessLogic.UpdateSupplierInfo(id);
         }
     }
 }

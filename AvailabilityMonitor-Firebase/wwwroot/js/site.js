@@ -10,8 +10,6 @@ var buttonImport;
 var buttonUpdate;
 var message;
 
-
-
 function startUpdate(productId) {
     switchButtons(true);
     message = document.getElementById('importMessage');
@@ -45,7 +43,9 @@ function startImport(productId) {
     message = document.getElementById('importMessage');
     message.innerHTML = 'Import in progress <i class="fa-solid fa-spinner fa-spin"></i>';
     importInfo = document.getElementById('importInfo');
-    importInfo.classList.toggle('show');
+    if (!importInfo.classList.contains('show')) {
+        importInfo.classList.toggle('show');
+    }
     importInfo.style.animationDuration = '1s';
 
     var url = window.location.origin + '/Products/UpdateAllProductsFromPresta';

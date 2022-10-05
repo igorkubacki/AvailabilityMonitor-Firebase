@@ -4,7 +4,7 @@ namespace AvailabilityMonitor_Firebase.Models
 {
     public partial class BusinessLogic
     {
-        private QuantityChange SnapshotToQuantityChange(DocumentSnapshot snapshot)
+        private static QuantityChange SnapshotToQuantityChange(DocumentSnapshot snapshot)
         {
             return new QuantityChange(
                 int.Parse(snapshot.Reference.Parent.Parent.Id),
@@ -14,6 +14,7 @@ namespace AvailabilityMonitor_Firebase.Models
                 snapshot.GetValue<bool>("isNotificationRead")
             );
         }
+
         public async Task<IEnumerable<QuantityChange>> GetAllQuantityChanges()
         {
             QuerySnapshot? collectionSnapshot = await db.Collection("products").Select("quantityChanges", "name").GetSnapshotAsync();
@@ -32,12 +33,14 @@ namespace AvailabilityMonitor_Firebase.Models
             }
             return quantityChanges.AsEnumerable();
         }
+
         public async Task<QuantityChange> GetQuantityChangeById(string id, int productId)
         {
             IEnumerable<QuantityChange>? quantityChanges = await GetQuantityChangesForProduct(productId);
 
             return quantityChanges.Where(c => c.DateTime.ToString() == id).First();
         }
+
         public async Task<IEnumerable<QuantityChange>> GetQuantityChangesForProduct(int productId)
         {
             QuerySnapshot? collectionSnapshot = await db.Collection("products").Document(productId.ToString()).Collection("quantityChanges").GetSnapshotAsync();
@@ -65,6 +68,7 @@ namespace AvailabilityMonitor_Firebase.Models
 
             await docRef.SetAsync(entry);
         }
+
         public async Task<bool> AnyQuantityChangesForProduct(int productId)
         {
             QuerySnapshot? collectionReference = await db.Collection("products").Document(productId.ToString())
@@ -73,7 +77,7 @@ namespace AvailabilityMonitor_Firebase.Models
             return collectionReference.Documents.Any();
         }
 
-        public async void MarkQuantityChangeAsRead(string id, int productId)
+        public async Task MarkQuantityChangeAsRead(string id, int productId)
         {
             DocumentReference docRef = db.Collection("products").Document(productId.ToString()).Collection("quantityChanges").Document(id);
             var entry = new Dictionary<string, object>
@@ -81,6 +85,20 @@ namespace AvailabilityMonitor_Firebase.Models
                 {"isNotificationRead", true}
             };
             await docRef.UpdateAsync(entry);
+        }
+
+        public async Task MarkAllQuantityChangesAsRead()
+        {
+            IEnumerable<QuantityChange>? quantityChanges = await GetAllQuantityChanges();
+
+            // Get only unread notifications.
+            quantityChanges = quantityChanges.Where(p => p.IsNotificationRead == false);
+
+            foreach (QuantityChange change in quantityChanges)
+            {
+                change.IsNotificationRead = true;
+                InsertQuantityChange(change);
+            }
         }
     }
 }

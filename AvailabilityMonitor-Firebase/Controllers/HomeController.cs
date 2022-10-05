@@ -1,5 +1,4 @@
 ﻿using AvailabilityMonitor_Firebase.Models;
-using Firebase.Auth;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

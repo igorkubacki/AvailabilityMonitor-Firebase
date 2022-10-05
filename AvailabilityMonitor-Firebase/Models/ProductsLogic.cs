@@ -1,24 +1,24 @@
 ﻿using Google.Cloud.Firestore;
 using System.Globalization;
 using System.Net.Http.Headers;
-using System.Web.Mvc;
 using System.Xml;
 
 namespace AvailabilityMonitor_Firebase.Models
 {
-    public partial class BusinessLogic : IDisposable
+    public partial class BusinessLogic
     {
-        FirestoreDb db;
+        private readonly FirestoreDb db;
         public BusinessLogic()
         {
             db = FirestoreDb.Create("availability-monitor-7231f");
         }
+
         public async Task<IEnumerable<Product>> GetAllProducts()
         {
             QuerySnapshot? collectionSnapshot = await db.Collection("products").GetSnapshotAsync();
             var products = new List<Product>();
 
-            foreach(DocumentSnapshot snapshot in collectionSnapshot.Documents)
+            foreach (DocumentSnapshot snapshot in collectionSnapshot.Documents)
             {
                 products.Add(SnapshotToProduct(snapshot));
             }
@@ -29,7 +29,7 @@ namespace AvailabilityMonitor_Firebase.Models
         public async Task<bool> ConfigExists()
         {
             var collectionSnapshot = await db.Collection("config").GetSnapshotAsync();
-            return collectionSnapshot.Documents.Count == 0 ? false : true;
+            return collectionSnapshot.Documents.Count != 0;
         }
 
         public async Task<Product?> GetProductById(int id)
@@ -38,23 +38,24 @@ namespace AvailabilityMonitor_Firebase.Models
 
             return SnapshotToProduct(snapshot);
         }
-        private Product SnapshotToProduct(DocumentSnapshot snapshot)
+
+        private static Product SnapshotToProduct(DocumentSnapshot snapshot)
         {
             Product product = new Product(
-                int.Parse(snapshot.Id), 
-                snapshot.GetValue<string>("index"), 
-                snapshot.GetValue<string>("name"), 
-                snapshot.GetValue<string>("photoURL"), 
+                int.Parse(snapshot.Id),
+                snapshot.GetValue<string>("index"),
+                snapshot.GetValue<string>("name"),
+                snapshot.GetValue<string>("photoURL"),
                 snapshot.GetValue<int>("stockavailableId"),
                 snapshot.GetValue<int>("quantity"),
                 snapshot.GetValue<float>("retailPrice"),
                 snapshot.GetValue<string>("availabilityLabel")
             );
 
-            snapshot.TryGetValue<int?>("supplierQuantity", out int? check);
-            if (check != null)
+            snapshot.TryGetValue("supplierQuantity", out int? supplierQuantity);
+            if (supplierQuantity != null)
             {
-                product.SupplierQuantity = snapshot.GetValue<int>("supplierQuantity");
+                product.SupplierQuantity = supplierQuantity;
                 product.SupplierRetailPrice = snapshot.GetValue<float>("supplierRetailPrice");
                 product.SupplierWholesalePrice = snapshot.GetValue<float>("supplierWholesalePrice");
                 product.IsVisible = snapshot.GetValue<bool>("isVisible");
@@ -62,13 +63,14 @@ namespace AvailabilityMonitor_Firebase.Models
 
             return product;
         }
+
         public async Task<IQueryable<Product>> GetProducts(ProductSearch? searchModel)
         {
             CollectionReference? collectionRef = db.Collection("products");
             QuerySnapshot? snapshot = await collectionRef.GetSnapshotAsync();
             var productsList = new List<Product>();
 
-            foreach(DocumentSnapshot docSnap in snapshot)
+            foreach (DocumentSnapshot docSnap in snapshot)
             {
                 productsList.Add(SnapshotToProduct(docSnap));
             }
@@ -92,7 +94,7 @@ namespace AvailabilityMonitor_Firebase.Models
                 if (searchModel.QuantityTo.HasValue)
                     products = products.Where(p => p.Quantity <= searchModel.QuantityTo);
             }
-            
+
             return products;
         }
 
@@ -101,11 +103,12 @@ namespace AvailabilityMonitor_Firebase.Models
             DocumentReference docRef = db.Collection("config").Document("config");
             Dictionary<string, object> entry = new Dictionary<string, object>
             {
-                {"prestaShopUrl", config.prestaShopUrl },
-                {"supplierFileUrl", config.supplierFileUrl},
-                {"prestaApiKey", config.prestaApiKey },
-                {"currency", config.currency ?? ""}
+                {"prestaShopUrl", config.PrestaShopUrl },
+                {"supplierFileUrl", config.SupplierFileUrl},
+                {"prestaApiKey", config.PrestaApiKey },
+                {"currency", config.Currency ?? ""}
             };
+
             await docRef.SetAsync(entry);
         }
 
@@ -120,14 +123,14 @@ namespace AvailabilityMonitor_Firebase.Models
                 {"retailPrice", product.RetailPrice },
                 {"quantity", product.Quantity },
                 {"stockavailableId", product.StockavailableId },
-                {"availabilityLabel", product.AvailabilityLabel },
+                {"availabilityLabel", product.AvailabilityLabel ?? "" },
                 {"supplierQuantity", product.SupplierQuantity },
                 {"supplierRetailPrice", product.SupplierRetailPrice },
                 {"supplierWholesalePrice", product.SupplierWholesalePrice },
                 {"isVisible", product.IsVisible }
             };
 
-            if(docRef.GetSnapshotAsync().Result.Exists)
+            if (docRef.GetSnapshotAsync().Result.Exists)
             {
                 await docRef.UpdateAsync(entry);
             }
@@ -136,25 +139,25 @@ namespace AvailabilityMonitor_Firebase.Models
                 await docRef.SetAsync(entry);
             }
         }
+
         public async Task DeleteProduct(int? productId)
         {
             if (productId != null)
             {
                 // Deleting all price and quantity changes for product.
                 var priceChangesSnapshot = await db.Collection("products").Document(productId.ToString()).Collection("priceChanges").GetSnapshotAsync();
-                
-                foreach(DocumentSnapshot priceChange in priceChangesSnapshot.Documents)
+
+                foreach (DocumentSnapshot priceChange in priceChangesSnapshot.Documents)
                 {
                     await priceChange.Reference.DeleteAsync();
                 }
-                
+
                 var quantityChangesSnapshot = await db.Collection("products").Document(productId.ToString()).Collection("quantityChanges").GetSnapshotAsync();
-                
-                foreach(DocumentSnapshot quantityChange in quantityChangesSnapshot.Documents)
+
+                foreach (DocumentSnapshot quantityChange in quantityChangesSnapshot.Documents)
                 {
                     await quantityChange.Reference.DeleteAsync();
                 }
-
 
                 // Deleting product.
                 var docRef = db.Collection("products").Document(productId.ToString());
@@ -162,40 +165,35 @@ namespace AvailabilityMonitor_Firebase.Models
             }
         }
 
-        public async Task<bool> AnyProducts()
-        {
-            QuerySnapshot? productsSnapshot = await db.Collection("products").GetSnapshotAsync();
-
-            return productsSnapshot.Documents.Count == 0;
-        }
-        public async Task<Config?> GetConfig()
+        public async Task<Config> GetConfig()
         {
             DocumentReference docRef = db.Collection("config").Document("config");
-            DocumentSnapshot? snapshot = await docRef.GetSnapshotAsync();
+            DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
 
             if (!snapshot.ContainsField("prestaApiKey")) return new Config();
 
             return new Config()
             {
-                prestaApiKey = snapshot.GetValue<string>("prestaApiKey"),
-                prestaShopUrl = snapshot.GetValue<string>("prestaShopUrl"),
-                supplierFileUrl = snapshot.GetValue<string>("supplierFileUrl"),
-                currency = snapshot.GetValue<string>("currency")
+                PrestaApiKey = snapshot.GetValue<string>("prestaApiKey"),
+                PrestaShopUrl = snapshot.GetValue<string>("prestaShopUrl"),
+                SupplierFileUrl = snapshot.GetValue<string>("supplierFileUrl"),
+                Currency = snapshot.GetValue<string>("currency")
             };
         }
 
-        private async Task<XmlDocument> ResponseIntoXml(HttpResponseMessage result)
+        private static async Task<XmlDocument> ResponseIntoXml(HttpResponseMessage result)
         {
-            string? resultContent = await result.Content.ReadAsStringAsync();
+            string resultContent = await result.Content.ReadAsStringAsync();
 
             XmlDocument XmlFile = new XmlDocument();
             XmlFile.LoadXml(resultContent);
 
             return XmlFile;
         }
-        private async Task<int> GetPrestaQuantity(HttpClient client, Config config, int stockavailableId)
+
+        private static async Task<int> GetPrestaQuantity(HttpClient client, Config config, int stockavailableId)
         {
-            Task<HttpResponseMessage>? request = client.GetAsync("stock_availables/" + stockavailableId + "?ws_key=" + config.prestaApiKey);
+            Task<HttpResponseMessage>? request = client.GetAsync("stock_availables/" + stockavailableId + "?ws_key=" + config.PrestaApiKey);
             request.Wait();
             HttpResponseMessage result = request.Result;
 
@@ -203,31 +201,31 @@ namespace AvailabilityMonitor_Firebase.Models
             {
                 XmlDocument xmlDocument = await ResponseIntoXml(result);
 
-                return int.Parse(xmlDocument.GetElementsByTagName("quantity").Item(0).InnerText);
+                XmlNode? quantity = xmlDocument.GetElementsByTagName("quantity").Item(0);
+
+                return quantity == null ? 0 : int.Parse(quantity.InnerText);
             }
             else
             {
                 throw new BadHttpRequestException("Status code " + result.StatusCode.ToString() + " - " + result.ReasonPhrase);
             }
         }
+
         public async Task ImportProductsFromPresta()
         {
             Config? config = await GetConfig();
 
-            if (config is null)
-            {
-                return;
-            }
+            if (config is null) return;
 
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(config.prestaShopUrl + "/api/");
+            client.BaseAddress = new Uri(config.PrestaShopUrl + "/api/");
 
             client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/xml"));
 
-            // getting all products id's
+            // Getting products' id numbers.
 
-            Task<HttpResponseMessage>? request = client.GetAsync("products/?ws_key=" + config.prestaApiKey);
+            Task<HttpResponseMessage>? request = client.GetAsync("products/?ws_key=" + config.PrestaApiKey);
             request.Wait();
             HttpResponseMessage? result = request.Result;
 
@@ -237,10 +235,10 @@ namespace AvailabilityMonitor_Firebase.Models
 
                 foreach (XmlNode node in AllProductsXML.ChildNodes.Item(1).ChildNodes.Item(0).ChildNodes)
                 {
-
                     int productId = int.Parse(node.Attributes[0].Value);
 
-                    Task<HttpResponseMessage>? productRequest = client.GetAsync("products/" + productId + "?ws_key=" + config.prestaApiKey);
+                    // Get info on specific product.
+                    Task<HttpResponseMessage>? productRequest = client.GetAsync("products/" + productId + "?ws_key=" + config.PrestaApiKey);
                     productRequest.Wait();
                     HttpResponseMessage? productResult = productRequest.Result;
 
@@ -254,9 +252,10 @@ namespace AvailabilityMonitor_Firebase.Models
                             continue;
                         }
 
+                        // Assigning values.
                         string index = productInfoXML.GetElementsByTagName("reference").Item(0).InnerText;
                         string name = productInfoXML.GetElementsByTagName("name").Item(0).ChildNodes.Item(0).InnerText;
-                        string photoURL = config.prestaShopUrl + "/" + productInfoXML.GetElementsByTagName("id_default_image").Item(0).InnerText
+                        string photoURL = config.PrestaShopUrl + "/" + productInfoXML.GetElementsByTagName("id_default_image").Item(0).InnerText
                             + "-home_default/p.jpg";
                         string availabilityLabel = productInfoXML.GetElementsByTagName("available_now").Item(0).ChildNodes.Item(0).InnerText;
                         int stockavailableId = int.Parse(productInfoXML.GetElementsByTagName("stock_available").Item(0).ChildNodes.Item(0).InnerText);
@@ -264,10 +263,7 @@ namespace AvailabilityMonitor_Firebase.Models
                         float retailPrice = (float)1.23 * float.Parse(productInfoXML.GetElementsByTagName("price").Item(0).InnerText, CultureInfo.InvariantCulture);
                         retailPrice = Convert.ToSingle(retailPrice);
 
-                        
-                        
                         InsertOrUpdateProduct(new Product(productId, index, name, photoURL, stockavailableId, quantity, retailPrice, availabilityLabel));
-                        
                     }
                     else
                     {
@@ -275,33 +271,30 @@ namespace AvailabilityMonitor_Firebase.Models
                     }
                 }
             }
-
             else
             {
                 throw new BadHttpRequestException("Status code " + result.StatusCode.ToString() + " - " + result.ReasonPhrase);
             }
             client.Dispose();
-            return;
         }
 
         public async Task UpdateProductFromPresta(int id)
         {
             Config? config = await GetConfig();
 
-            if (config is null)
-            {
-                return;
-            }
+            if (config is null) return;
 
             Product? product = await GetProductById(id);
 
+            if (product == null) return;
+
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(config.prestaShopUrl + "/api/");
+            client.BaseAddress = new Uri(config.PrestaShopUrl + "/api/");
 
             client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/xml"));
 
-            Task<HttpResponseMessage>? request = client.GetAsync("products/" + product.PrestashopId + "?ws_key=" + config.prestaApiKey);
+            Task<HttpResponseMessage>? request = client.GetAsync("products/" + product.PrestashopId + "?ws_key=" + config.PrestaApiKey);
             request.Wait();
             HttpResponseMessage? result = request.Result;
 
@@ -311,7 +304,7 @@ namespace AvailabilityMonitor_Firebase.Models
 
                 string index = productInfoXML.GetElementsByTagName("reference").Item(0).InnerText;
                 string name = productInfoXML.GetElementsByTagName("name").Item(0).ChildNodes.Item(0).InnerText;
-                string photoURL = config.prestaShopUrl + "/" + productInfoXML.GetElementsByTagName("id_default_image").Item(0).InnerText
+                string photoURL = config.PrestaShopUrl + "/" + productInfoXML.GetElementsByTagName("id_default_image").Item(0).InnerText
                     + "-home_default/p.jpg";
                 string availabilityLabel = productInfoXML.GetElementsByTagName("available_now").Item(0).ChildNodes.Item(0).InnerText;
                 int stockavailableId = int.Parse(productInfoXML.GetElementsByTagName("stock_available").Item(0).ChildNodes.Item(0).InnerText);
@@ -335,18 +328,15 @@ namespace AvailabilityMonitor_Firebase.Models
             }
         }
 
-        public async Task<bool> UpdateSupplierInfo()
+        public async Task UpdateSupplierInfo()
         {
             Config? config = await GetConfig();
 
-            if (config is null)
-            {
-                return false;
-            }
+            if (config is null) return;
 
             HttpClient client = new HttpClient();
 
-            Task<HttpResponseMessage>? request = client.GetAsync(config.supplierFileUrl);
+            Task<HttpResponseMessage>? request = client.GetAsync(config.SupplierFileUrl);
             request.Wait();
             HttpResponseMessage? result = request.Result;
 
@@ -356,7 +346,6 @@ namespace AvailabilityMonitor_Firebase.Models
                 XmlNodeList? indexNodes = supplierProducts.GetElementsByTagName("Kod");
 
                 IEnumerable<Product>? products = await GetAllProducts();
-
 
                 foreach (Product product in products)
                 {
@@ -378,38 +367,35 @@ namespace AvailabilityMonitor_Firebase.Models
             {
                 throw new BadHttpRequestException("Status code " + result.StatusCode.ToString() + " - " + result.ReasonPhrase);
             }
-            return true;
         }
-        public async Task<bool> UpdateInfoFromXmlFile(int productId)
+
+        public async Task UpdateSupplierInfo(int productId)
         {
             Config? config = await GetConfig();
 
-            if (config is null)
-            {
-                return false;
-            }
+            if (config is null) return;
+
+            Product? product = await GetProductById(productId);
+
+            if (product == null) return;
 
             HttpClient client = new HttpClient();
 
-            Task<HttpResponseMessage>? request = client.GetAsync(config.supplierFileUrl);
+            Task<HttpResponseMessage>? request = client.GetAsync(config.SupplierFileUrl);
             request.Wait();
             HttpResponseMessage? result = request.Result;
 
             if (result.IsSuccessStatusCode)
             {
                 XmlDocument supplierProducts = await ResponseIntoXml(result);
-                XmlNodeList? indexes = supplierProducts.GetElementsByTagName("Kod");
-
-                Product? product = await GetProductById(productId);
-
-                if (product == null) return false;
+                XmlNodeList indexes = supplierProducts.GetElementsByTagName("Kod");
 
                 foreach (XmlNode node in indexes)
                 {
                     var index = node.InnerText.Trim();
                     if (product.Index == index)
                     {
-                        XmlNode supplierProduct = node.ParentNode;
+                        XmlNode? supplierProduct = node.ParentNode;
 
                         Product updatedProduct = UpdateProductSupplierInfo(product, supplierProduct);
                         InsertOrUpdateProduct(updatedProduct);
@@ -420,66 +406,45 @@ namespace AvailabilityMonitor_Firebase.Models
             {
                 throw new BadHttpRequestException("Status code " + result.StatusCode.ToString() + " - " + result.ReasonPhrase);
             }
-
-            return true;
         }
         private Product UpdateProductSupplierInfo(Product product, XmlNode node)
         {
             int supplierQuantity = int.Parse(node.ChildNodes.Item(8).InnerText.Trim());
 
-            // If value is different than the previous one, create a change object.
+            // If value is different from the previous one, insert a change.
             if (product.SupplierQuantity != supplierQuantity && product.SupplierQuantity != null)
             {
-                InsertQuantityChange(new QuantityChange(product.ProductId, (int)product.SupplierQuantity, supplierQuantity, DateTime.Now, false));
+                InsertQuantityChange(new QuantityChange(product.PrestashopId, (int)product.SupplierQuantity, supplierQuantity, DateTime.Now, false));
             }
-            // If it's first import, then create a change.
+
+            // If it's first import, then insert an initial change.
             if (product.SupplierQuantity == null)
             {
-                InsertQuantityChange(new QuantityChange(product.ProductId, 0, supplierQuantity, DateTime.Now, true));
-
+                InsertQuantityChange(new QuantityChange(product.PrestashopId, 0, supplierQuantity, DateTime.Now, true));
             }
             product.SupplierQuantity = supplierQuantity;
 
 
             float supplierRetailPrice = float.Parse(node.ChildNodes.Item(7).InnerText.Trim(), CultureInfo.InvariantCulture);
-            // If value is different than the previous one, create a change object.
+
+            // If value is different from the previous one, insert a change.
             if (product.SupplierRetailPrice != supplierRetailPrice && product.SupplierRetailPrice != null)
             {
-                InsertPriceChange(new PriceChange(product.ProductId, (float)product.SupplierRetailPrice, supplierRetailPrice, DateTime.Now, false));
+                InsertPriceChange(new PriceChange(product.PrestashopId, (float)product.SupplierRetailPrice, supplierRetailPrice, DateTime.Now, false));
             }
-            // If it's first import, then create a change.
+
+            // If it's first import, then insert an initial change.
             if (product.SupplierRetailPrice == null)
             {
                 InsertPriceChange(new PriceChange(product.PrestashopId, 0, supplierRetailPrice, DateTime.Now, true));
             }
             product.SupplierRetailPrice = supplierRetailPrice;
 
-
             product.SupplierWholesalePrice = float.Parse(node.ChildNodes.Item(5).InnerText.Trim(), CultureInfo.InvariantCulture);
 
-
-            product.IsVisible = node.ChildNodes.Item(10).InnerText.Trim() == "1" ? true : false;
+            product.IsVisible = node.ChildNodes.Item(10).InnerText.Trim() == "1";
 
             return product;
         }
-
-        private bool disposed = false;
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    throw new NotImplementedException();
-                }
-            }
-            this.disposed = true;
-        }
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
     }
 }
