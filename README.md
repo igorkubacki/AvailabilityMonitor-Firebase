@@ -45,5 +45,6 @@ The app was created to monitor product stock and prices and change it on the web
 ## 💻 Technologies
 
 * .NET 6
+* [Chart.js](https://www.chartjs.org/)
 * [Firebase](https://firebase.google.com/)
 * Visual Studio
