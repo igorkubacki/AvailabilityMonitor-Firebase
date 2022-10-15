@@ -54,5 +54,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "C:/home/keys/availability-monitor-7231f-ad6a7d6a6f03.json");
 
 app.Run();
