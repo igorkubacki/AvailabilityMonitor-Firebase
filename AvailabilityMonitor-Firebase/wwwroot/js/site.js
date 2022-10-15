@@ -12,6 +12,7 @@ var message;
 
 function startUpdate(productId) {
     switchButtons(true);
+    switchButtons
     message = document.getElementById('importMessage');
     message.innerHTML = 'Update in progress <i class="fa-solid fa-spinner fa-spin"></i>';
     importInfo = document.getElementById('importInfo');
