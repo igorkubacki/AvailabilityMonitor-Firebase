@@ -16,10 +16,10 @@ function startUpdate(productId) {
     message = document.getElementById('importMessage');
     message.innerHTML = 'Update in progress <i class="fa-solid fa-spinner fa-spin"></i>';
     importInfo = document.getElementById('importInfo');
+    importInfo.style.animationDuration = '1s';
     if (!importInfo.classList.contains('show')) {
         importInfo.classList.toggle('show');
     }
-    importInfo.style.animationDuration = '1s';
 
     var url = window.location.origin + '/Products/UpdateAllProductsSupplierInfo';
     var type = 'GET';
@@ -44,10 +44,10 @@ function startImport(productId) {
     message = document.getElementById('importMessage');
     message.innerHTML = 'Import in progress <i class="fa-solid fa-spinner fa-spin"></i>';
     importInfo = document.getElementById('importInfo');
+    importInfo.style.animationDuration = '1s';
     if (!importInfo.classList.contains('show')) {
         importInfo.classList.toggle('show');
     }
-    importInfo.style.animationDuration = '1s';
 
     var url = window.location.origin + '/Products/UpdateAllProductsFromPresta';
     var type = 'GET';
@@ -77,13 +77,13 @@ function operationDone() {
 }
 
 function operationFailed() {
-    message.innerHTML = 'Something went wrong<br />Check your configuration';
+    message.innerHTML = 'Something went wrong<br>Check your configuration';
     switchButtons(false);
     setTimeout(function () {
-        if (message.innerHTML === 'Something went wrong<br />Check your configuration') {
+        if (message.innerHTML === 'Something went wrong<br>Check your configuration') {
             importInfo.classList.toggle('show');
         }
-    }, 5000);
+    }, 3000);
 }
 
 

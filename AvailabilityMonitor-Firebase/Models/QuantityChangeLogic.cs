@@ -10,7 +10,7 @@ namespace AvailabilityMonitor_Firebase.Models
                 int.Parse(snapshot.Reference.Parent.Parent.Id),
                 snapshot.GetValue<int>("previousQuantity"),
                 snapshot.GetValue<int>("newQuantity"),
-                DateTime.Parse(snapshot.Id),
+                DateTime.ParseExact(snapshot.Id, formats, System.Globalization.CultureInfo.InvariantCulture),
                 snapshot.GetValue<bool>("isNotificationRead")
             );
         }

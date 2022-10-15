@@ -4,13 +4,15 @@ namespace AvailabilityMonitor_Firebase.Models
 {
     public partial class BusinessLogic
     {
+        private static string[] formats = new string[] { "dd.MM.yyyy", "dd.M.yyyy", "d.MM.yyyy", "d.M.yyyy", 
+            "dd.MM.yyyy HH:mm:ss", "dd.M.yyyy HH:mm:ss", "d.MM.yyyy HH:mm:ss", "d.M.yyyy HH:mm:ss" };
         private static PriceChange SnapshotToPriceChange(DocumentSnapshot snapshot)
         {
             return new PriceChange(
                 int.Parse(snapshot.Reference.Parent.Parent.Id),
                 snapshot.GetValue<float>("previousPrice"),
                 snapshot.GetValue<float>("newPrice"),
-                DateTime.Parse(snapshot.Id),
+                DateTime.ParseExact(snapshot.Id, formats, System.Globalization.CultureInfo.InvariantCulture),
                 snapshot.GetValue<bool>("isNotificationRead")
             );
         }
