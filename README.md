@@ -1,14 +1,18 @@
 # Availability Monitor
 ## Table of contents
 * [General info](#-general-info)
+* [Live demo](#-live-demo)
 * [Features](#-features)
 * [How it works](#%EF%B8%8F-how-it-works)
 * [Screenshots](#-screenshots) 
 * [Future improvements](#-future-improvements)
-* [Technologies](#-technologies)
+* [Technologies](#-technologies-and-tools)
 
 ## 📄 General info
 The app was created to monitor product stock and prices and change it on the website I am currently managing. It imports products from PrestaShop, then adds info about stock and prices based on the supplier XML file and notifies about any changes.
+
+## 🌐 Live demo
+<a href="https://availabilitymonitor-firebase.azurewebsites.net/"><img height="35" src="https://img.shields.io/badge/DEMO%20WEBSITE-58CC02?style=for-the-badge"></a>
 
 ## ✨ Features
 
@@ -42,9 +46,10 @@ The app was created to monitor product stock and prices and change it on the web
 * Visual improvements (animations, effects).
 * Better responsiveness.
 
-## 💻 Technologies
+## 💻 Technologies and tools
 
 * .NET 6
 * [Chart.js](https://www.chartjs.org/)
 * [Firebase](https://firebase.google.com/)
 * Visual Studio
+* Azure
