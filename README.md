@@ -12,7 +12,7 @@
 The app was created to monitor product stock and prices and change it on the website I am currently managing. It imports products from PrestaShop, then adds info about stock and prices based on the supplier XML file and notifies about any changes.
 
 ## 🌐 Live demo
-<a href="https://availabilitymonitor-firebase.azurewebsites.net/"><img height="35" src="https://img.shields.io/badge/DEMO%20WEBSITE-58CC02?style=for-the-badge"></a>
+<a href="https://availabilitymonitor20221110141947.azurewebsites.net/"><img height="35" src="https://img.shields.io/badge/DEMO%20WEBSITE-58CC02?style=for-the-badge"></a>
 
 ## ✨ Features
 
